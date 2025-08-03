@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8" />
+    <title>Wyścig Żółwi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        #track {
+            width: 100%;
+            height: 180px;
+            position: relative;
+            margin-top: 30px;
+            border-top: 4px solid #444;
+            border-bottom: 4px solid #444;
+        }
+        .runner {
+            position: absolute;
+            width: 100px;
+            height: 80px;
+        }
+        #runner1 {
+            top: 40px;
+            left: 0;
+        }
+        #runner2 {
+            top: 120px;
+            left: 0;
+        }
+        .runner-name {
+            position: absolute;
+            width: 100px;
+            font-weight: bold;
+            text-align: center;
+            color: #222;
+            user-select: none;
+        }
+        #name1Display {
+            top: 10px;
+            left: 0;
+        }
+        #name2Display {
+            top: 90px;
+            left: 0;
+        }
+        #startBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 25px;
+            font-size: 24px;
+            font-weight: bold;
+            color: green;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wyścig Żółwi</h1>
+    <div>
+        <input type="text" id="name1" placeholder="Nick 1" />
+        <input type="text" id="name2" placeholder="Nick 2" />
+        <button id="startBtn" onclick="startRace()">Start</button>
+    </div>
+
+    <div id="track">
+        <div id="name1Display" class="runner-name"></div>
+        <img src="av1.png" alt="Żółw 1" class="runner" id="runner1" />
+        <div id="name2Display" class="runner-name"></div>
+        <img src="av2.png" alt="Żółw 2" class="runner" id="runner2" />
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        let interval1, interval2;
+        let raceOver = false;
+
+        function startRace() {
+            if (raceOver === false || confirm("Czy chcesz rozpocząć nowy wyścig?")) {
+                raceOver = false;
+                document.getElementById('result').innerText = "";
+                const r1 = document.getElementById("runner1");
+                const r2 = document.getElementById("runner2");
+                const name1Display = document.getElementById("name1Display");
+                const name2Display = document.getElementById("name2Display");
+
+                // Reset pozycje
+                r1.style.left = "0px";
+                r2.style.left = "0px";
+                name1Display.style.left = "0px";
+                name2Display.style.left = "0px";
+
+                // Pobierz nicki albo default
+                const name1 = document.getElementById("name1").value.trim() || "Gracz 1";
+                const name2 = document.getElementById("name2").value.trim() || "Gracz 2";
+
+                // Ustaw nicki w divach nad żółwiami
+                name1Display.innerText = name1;
+                name2Display.innerText = name2;
+
+                // Szerokość okna (koniec trasy)
+                const finish = window.innerWidth - 120;
+
+                // Clear jeśli jakieś wcześniej działają
+                clearInterval(interval1);
+                clearInterval(interval2);
+
+                interval1 = setInterval(() => {
+                    if (raceOver) return;
+                    let pos = parseInt(r1.style.left);
+                    let move = Math.floor(Math.random() * 10) + 1;
+                    let newPos = pos + move;
+                    if (newPos >= finish) newPos = finish;
+                    r1.style.left = newPos + "px";
+                    name1Display.style.left = newPos + "px";
+
+                    if (newPos >= finish) {
+                        endRace(name1);
+                    }
+                }, 100);
+
+                interval2 = setInterval(() => {
+                    if (raceOver) return;
+                    let pos = parseInt(r2.style.left);
+                    let move = Math.floor(Math.random() * 10) + 1;
+                    let newPos = pos + move;
+                    if (newPos >= finish) newPos = finish;
+                    r2.style.left = newPos + "px";
+                    name2Display.style.left = newPos + "px";
+
+                    if (newPos >= finish) {
+                        endRace(name2);
+                    }
+                }, 100);
+            }
+        }
+
+        function endRace(winner) {
+            if (raceOver) return;
+            raceOver = true;
+            clearInterval(interval1);
+            clearInterval(interval2);
+            document.getElementById("result").innerText = "🏁 Wygrał: " + winner + "!";
+        }
+    </script>
+</body>
+</html>
